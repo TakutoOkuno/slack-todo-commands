@@ -158,11 +158,11 @@ function showAll(spreadSheet, channelId, assignee = null) {
         row[_columnInfo["done"] - 1],
         row[_columnInfo["deadline"] - 1] !== ""
           ? ` ${row[_columnInfo["deadline"] - 1]}`
-          : "",
+          : "期限なし",
       ];
       const statusIcon = getStatusIcon(done, deadline);
       const strikeoutLine = done === true ? "~" : "";
-      message += `${strikeoutLine}${statusIcon}#${num} ${assignee} ${content}${deadline}${strikeoutLine}\n`;
+      message += `${strikeoutLine}${statusIcon}#${num} ${assignee} ${content} ${deadline}${strikeoutLine}\n`;
     }
     return message;
   }
@@ -188,14 +188,14 @@ function showUndone(spreadSheet, channelId, assignee = null) {
         row[_columnInfo["done"] - 1],
         row[_columnInfo["deadline"] - 1] !== ""
           ? ` ${row[_columnInfo["deadline"] - 1]}`
-          : "",
+          : "期限なし",
       ];
       if (done === true) {
         continue;
       }
       const statusIcon = getStatusIcon(done, deadline);
       const strikeoutLine = done === true ? "~" : "";
-      message += `${strikeoutLine}${statusIcon}#${num} ${assignee} ${content}${deadline}${strikeoutLine}\n`;
+      message += `${strikeoutLine}${statusIcon}#${num} ${assignee} ${content} ${deadline}${strikeoutLine}\n`;
     }
     return message;
   }
