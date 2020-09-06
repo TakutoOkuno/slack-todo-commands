@@ -331,7 +331,7 @@ function isValidDate(string) {
 function getStatusIcon(done, deadline = undefined) {
   return done === true
     ? "✅ "
-    : new Date(deadline) < new Date()
+    : new Date(deadline).setDate(new Date(deadline).getDate() + 1) < new Date()
     ? ":warning: "
     : "⬛️️ ";
 }
