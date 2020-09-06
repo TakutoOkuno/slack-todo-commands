@@ -113,6 +113,27 @@ function doPost(e) {
     ).setMimeType(ContentService.MimeType.JSON);
   }
 
+  if (command === "/task_set_deadline") {
+    const acceptableArgumentLength = 2;
+    if (parsedText.length > acceptableArgumentLength) {
+      return ContentService.createTextOutput(
+        JSON.stringify({
+          response_type: "in_channel",
+          text: `${command} の引数が多すぎます（許容数：${acceptableArgumentLength}）`,
+        })
+      ).setMimeType(ContentService.MimeType.JSON);
+    }
+    const setDeadlineRes = setDeadline(
+      spreadSheet,
+      channelId,
+      parsedText[0],
+      parsedText[1]
+    );
+    return ContentService.createTextOutput(
+      JSON.stringify({ response_type: "in_channel", text: setDeadlineRes })
+    ).setMimeType(ContentService.MimeType.JSON);
+  }
+
   return ContentService.createTextOutput(
     JSON.stringify({ response_type: "in_channel", text: command })
   ).setMimeType(ContentService.MimeType.JSON);
@@ -220,6 +241,26 @@ function assign(spreadSheet, channelId, taskNum, assignee) {
   const message = `タスクに担当を割り当てました： ${statusIcon}#${num} ${assignee} ${content} ${deadline}`;
   return message;
 }
+
+function setDeadline(spreadSheet, channelId, taskNum, deadline) {
+    if (!isValidDate(deadline)) {
+        return "期限設定に失敗しました。期限を指定するには有効な日付を yyyy/mm/dd 形式で指定してください。"
+    }
+    const sheet = spreadSheet.getSheetByName(channelId);
+    if (!sheet) {
+      return "タスクはありません";
+    }
+    const [num, assignee, content, done, _] = getTask(sheet, taskNum);
+    if (done) {
+        return `#${num} のタスクはすでに完了しています。`
+    }
+    const range = sheet.getRange(taskNum, _columnInfo["deadline"])
+    range.setNumberFormat("@")
+    range.setValue(deadline);
+    const statusIcon = getStatusIcon(done, deadline);
+    const message = `タスクに期限を設定しました： ${statusIcon}#${num} ${assignee} ${content} ${deadline}`;
+    return message;
+  }
 
 function getTask(sheet, taskNum) {
   const length = Object.keys(_columnInfo).length;
